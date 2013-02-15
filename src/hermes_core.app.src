@@ -1,0 +1,13 @@
+{application, hermes_core,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  riak_core
+                 ]},
+  {mod, { hermes_core_app, []}},
+  {env, []}
+ ]}.
