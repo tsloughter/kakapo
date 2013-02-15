@@ -1,5 +1,5 @@
--module(hermes_core).
--include("hermes_core.hrl").
+-module(kakapo_core).
+-include("kakapo_core.hrl").
 -include_lib("riak_core/include/riak_core_vnode.hrl").
 
 -export([
@@ -11,6 +11,6 @@
 % @doc Pings a random vnode to make sure communication is functional
 ping() ->
     DocIdx = riak_core_util:chash_key({<<"ping">>, term_to_binary(now())}),
-    PrefList = riak_core_apl:get_primary_apl(DocIdx, 1, hermes_core),
+    PrefList = riak_core_apl:get_primary_apl(DocIdx, 1, kakapo_core),
     [{IndexNode, _Type}] = PrefList,
-    riak_core_vnode_master:sync_spawn_command(IndexNode, ping, hermes_core_vnode_master).
+    riak_core_vnode_master:sync_spawn_command(IndexNode, ping, kakapo_core_vnode_master).

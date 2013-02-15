@@ -1,4 +1,4 @@
-{application, hermes_core,
+{application, kakapo_core,
  [
   {description, ""},
   {vsn, "1"},
@@ -8,6 +8,6 @@
                   stdlib,
                   riak_core
                  ]},
-  {mod, { hermes_core_app, []}},
+  {mod, { kakapo_core_app, []}},
   {env, []}
  ]}.

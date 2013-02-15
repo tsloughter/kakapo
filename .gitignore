@@ -10,4 +10,4 @@ ebin
 _rel
 erl_crash.dump
 log
-
+data

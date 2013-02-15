@@ -1,4 +1,4 @@
--module(hermes_core_sup).
+-module(kakapo_core_sup).
 
 -behaviour(supervisor).
 
@@ -20,8 +20,8 @@ start_link() ->
 %% ===================================================================
 
 init(_Args) ->
-    VMaster = { hermes_core_vnode_master,
-                  {riak_core_vnode_master, start_link, [hermes_core_vnode]},
+    VMaster = { kakapo_core_vnode_master,
+                  {riak_core_vnode_master, start_link, [kakapo_core_vnode]},
                   permanent, 5000, worker, [riak_core_vnode_master]},
 
     { ok,

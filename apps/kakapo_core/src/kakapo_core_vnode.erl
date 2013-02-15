@@ -1,6 +1,6 @@
--module(hermes_core_vnode).
+-module(kakapo_core_vnode).
 -behaviour(riak_core_vnode).
--include("hermes_core.hrl").
+-include("kakapo_core.hrl").
 
 -export([start_vnode/1,
          init/1,
@@ -14,6 +14,7 @@
          handoff_finished/2,
          handle_handoff_data/2,
          encode_handoff_item/2,
+         handle_coverage/4,
          handle_exit/3]).
 
 -record(state, {partition}).
@@ -58,6 +59,9 @@ delete(State) ->
 
 handle_exit(_Pid, _Reason, State) ->
     {noreply, State}.
+
+handle_coverage(_Req, _KeySpaces, _Sender, State) ->
+    {stop, not_implemented, State}.
 
 terminate(_Reason, _State) ->
     ok.
