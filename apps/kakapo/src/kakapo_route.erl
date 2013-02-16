@@ -2,7 +2,7 @@
 
 -export([lookup_service/1
         ,connect_to_server/2
-        ,forward/2]).
+        ,forward/3]).
 
 -define(CONNECT_TIMEOUT, 5000).
 
@@ -13,14 +13,14 @@ connect_to_server(Service, Port) ->
     Opts = [binary, {packet, http_bin}, {packet_size, 1024 * 1024}, {recbuf, 1024 * 1024}, {active, once}, {reuseaddr, true}],
     gen_tcp:connect(binary_to_list(Service), Port, Opts, ?CONNECT_TIMEOUT).
 
-forward(BackendSocket, Req) ->
+forward(BackendSocket, AdditionalHeaders, Req) ->
     Request = make_request({cowboy_req:get(method, Req), cowboy_req:get(path, Req), cowboy_req:get(version, Req)}),
     Headers = cowboy_req:get(headers, Req),    
     gen_tcp:send(BackendSocket, Request),    
     Headers1 = lists:foldl(
                  fun(H, Acc) ->
                          make_header(H) ++ Acc
-                 end, [<<"\r\n">>], Headers),
+                 end, [<<"\r\n">>], Headers++AdditionalHeaders),
     gen_tcp:send(BackendSocket, Headers1),
     relay(cowboy_req:get(socket, Req), BackendSocket, Req),
     {ok, Req}.
