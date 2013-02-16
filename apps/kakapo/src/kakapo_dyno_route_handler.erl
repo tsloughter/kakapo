@@ -11,8 +11,8 @@ init({tcp, http}, Req, []) ->
 
 handle(Req, State) ->
     {Domain, Req2} = cowboy_req:host(Req),
-    {ok, Service} = kakapo_route:lookup_service(Domain),
-    {ok, BackendSocket} = kakapo_route:connect_to_server(Service, 80),
+    {ok, Host, Port} = kakapo_route:lookup_service(Domain),
+    {ok, BackendSocket} = kakapo_route:connect_to_server(Host, Port),
     {ok, Req3} = kakapo_route:forward(BackendSocket, Req2),
     {ok, Req3, State}.    
 

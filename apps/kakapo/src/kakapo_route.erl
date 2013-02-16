@@ -7,7 +7,7 @@
 -define(CONNECT_TIMEOUT, 5000).
 
 lookup_service(_Domain) ->
-    {ok, <<"google.com">>}.
+    {ok, <<"google.com">>, 80}.
 
 connect_to_server(Service, Port) ->
     Opts = [binary, {packet, http_bin}, {packet_size, 1024 * 1024}, {recbuf, 1024 * 1024}, {active, once}, {reuseaddr, true}],
