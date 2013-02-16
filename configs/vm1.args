@@ -1,5 +1,5 @@
 ## Name of the node
--name hermes_core@localhost.localdomain
+-name kakapo1@127.0.0.1
 
 ## Cookie for distributed erlang
 -setcookie hermes_core
