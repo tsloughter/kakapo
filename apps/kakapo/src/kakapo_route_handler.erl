@@ -14,7 +14,7 @@ handle(Req, State) ->
     case cowboy_req:header(<<"x-kakapo-route">>, Req2) of
         {undefined, Req3} ->
             Headers = [{<<"x-kakapo-route">>, <<"true">>}],
-            {{ok, Host}, Port} = {kakapo_core:lookup_router(Domain), 8080};
+            {ok, Host, Port} = kakapo_core:lookup_router(Domain);
         {_, Req3} ->
             Headers = [],
             {ok, Host, Port} = kakapo_route:lookup_service(Domain)

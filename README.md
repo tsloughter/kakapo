@@ -4,8 +4,20 @@
 
 ```
 $ make rel
+```
+
+Start three nodes:
+
+```
 $ PORT=8080 _rel/bin/kakapo -config configs/sys1.config -args_file configs/vm1.args
-...
+```
+
+```
+$ PORT=8081 _rel/bin/kakapo -config configs/sys2.config -args_file configs/vm2.args
+```
+
+```
+$ PORT=8082 _rel/bin/kakapo -config configs/sys3.config -args_file configs/vm3.args
 ```
 
 Send request

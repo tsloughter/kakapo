@@ -14,7 +14,7 @@ lookup_router(Domain) ->
     PrefList = riak_core_apl:get_primary_apl(DocIdx, 1, kakapo_core),
     [{IndexNode, _Type}] = PrefList,
     io:format("Index Node ~p~n", [IndexNode]),
-    [_, Host] = string:tokens(atom_to_list(element(2, IndexNode)), "@"),    
-    io:format("Host ~p~n", [Host]),
-    {ok, list_to_binary(Host)}.
+    ["kakapo"++Port, Host] = string:tokens(atom_to_list(element(2, IndexNode)), "@"),
+    io:format("Host ~p Port ~p~n", [Host, Port]),
+    {ok, list_to_binary(Host), list_to_integer(Port)}.
     %riak_core_vnode_master:sync_spawn_command(IndexNode, ping, kakapo_core_vnode_master).
