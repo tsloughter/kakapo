@@ -17,9 +17,10 @@ handle(Req, State) ->
             {ok, Host, Port} = kakapo_core:lookup_router(Domain),
             send_req_to_host(Req3, State, Headers, Host, Port);
         {_, _} ->
-            io:format("Got request with x-kakapo-route, fetching ~p~n", [Domain]),
+            io:format("Got request with x-kakapo-route, fetching ~p~n", [Domain]),            
             Headers = [],
-            {ok, Host, Port} = kakapo_route:lookup_service(Domain),
+            {Host, Port} = kakapo_route:lookup_service(Domain),
+            io:format("Sending request to ~p ~p~n", [Host, Port]),            
             send_req_to_host(Req2, State, Headers, Host, Port)
     end.
 

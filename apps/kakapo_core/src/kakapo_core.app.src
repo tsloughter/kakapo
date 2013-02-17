@@ -3,11 +3,14 @@
   {description, ""},
   {vsn, "1"},
   {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib,
-                  riak_core
-                 ]},
+ {applications, [
+                kernel
+                ,stdlib
+                ,riak_core
+                ,poolboy
+                ,bitcask
+                ,riak_kv
+                ]},
   {mod, { kakapo_core_app, []}},
   {env, []}
  ]}.

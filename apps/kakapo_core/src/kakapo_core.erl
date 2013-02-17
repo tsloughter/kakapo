@@ -3,7 +3,8 @@
 -include_lib("riak_core/include/riak_core_vnode.hrl").
 
 -export([
-         lookup_router/1
+        lookup_router/1
+        ,lookup_service/1
         ]).
 
 %% Public API
@@ -18,3 +19,9 @@ lookup_router(Domain) ->
     io:format("Host ~p Port ~p~n", [Host, Port]),
     {ok, list_to_binary(Host), list_to_integer(Port)}.
     %riak_core_vnode_master:sync_spawn_command(IndexNode, ping, kakapo_core_vnode_master).
+
+lookup_service(Domain) ->
+    {ok, C} = riak:local_client(),
+    {ok, O} = C:get(<<"domains">>, Domain),
+    riak_object:get_value(O).
+
