@@ -14,14 +14,16 @@ handle(Req, State) ->
     {Domain, _} = cowboy_req:host(Req),
     case cowboy_req:header(<<"x-kakapo-route">>, Req) of
         {undefined, Req3} ->
-            Headers = [{<<"x-kakapo-route">>, <<"true">>}],
-            {ok, Host, Port} = kakapo_core:lookup_router(Domain),
-            send_req_to_host(Req3, State, Headers, Host, Port);
+            Headers = [{<<"x-kakapo-route">>, <<"true">>}],            
+            case kakapo_core:lookup_router(Domain) of
+                local_vnode ->
+                    forward_to_dyno(Domain, Req, State);
+                {ok, Host, Port} ->
+                    send_req_to_host(Req3, State, Headers, Host, Port)
+            end;
         {_, _} ->
             lager:info("Got request with x-kakapo-route, fetching ~p~n", [Domain]),            
-            {Host, Port} = kakapo_route:lookup_service(Domain),
-            lager:info("Sending request to ~p ~p~n", [Host, Port]),            
-            send_req_to_host(Req, State, [], Host, Port, true)
+            forward_to_dyno(Domain, Req, State)
     end.
 
 terminate(_Reason, _Req, _State) ->
@@ -29,6 +31,11 @@ terminate(_Reason, _Req, _State) ->
 
 %%
 %% Internal functions
+
+forward_to_dyno(Domain, Req, State) ->
+    {Host, Port} = kakapo_route:lookup_service(Domain),
+    lager:info("Sending request to ~p ~p~n", [Host, Port]),            
+    send_req_to_host(Req, State, [], Host, Port, true).
 
 send_req_to_host(Req, State, Headers, Host, Port) ->
     send_req_to_host(Req, State, Headers, Host, Port, false).
