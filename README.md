@@ -33,6 +33,6 @@ Connect nodes:
 Send request to port 8080, 8081 or 8082:
 
 ```
-$ curl -v localhost:<PORT>
+$ curl -v localhost:<PORT>/get -H "Host: httpbin.org"
 ```
 
