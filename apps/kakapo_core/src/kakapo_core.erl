@@ -11,7 +11,7 @@
 
 % @doc Pings a random vnode to make sure communication is functional
 lookup_router(Domain) ->
-    DocIdx = riak_core_util:chash_key({Domain, <<"domain">>}),
+    DocIdx = riak_core_util:chash_key({<<"domains">>, Domain}),
     PrefList = riak_core_apl:get_primary_apl(DocIdx, 1, kakapo_core),
     [{IndexNode, _Type}] = PrefList,
     lager:info("Index Node ~p~n", [IndexNode]),
@@ -21,7 +21,5 @@ lookup_router(Domain) ->
     %riak_core_vnode_master:sync_spawn_command(IndexNode, ping, kakapo_core_vnode_master).
 
 lookup_service(Domain) ->
-    {ok, C} = riak:local_client(),
-    {ok, O} = C:get(<<"domains">>, Domain),
-    riak_object:get_value(O).
-
+    [{_, V}] = ets:lookup(domains_table, {<<"domains">>, Domain}),
+    V.

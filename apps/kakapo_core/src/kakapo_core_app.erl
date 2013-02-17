@@ -12,6 +12,7 @@
 start(_StartType, _StartArgs) ->
     case kakapo_core_sup:start_link() of
         {ok, Pid} ->
+            ets:new(domains_table, [ordered_set, public, named_table]),
             ok = riak_core:register(kakapo_core, [{vnode_module, kakapo_core_vnode}]),
             ok = riak_core:register(riak_kv, [{vnode_module, riak_kv_vnode}]),
             %ok = riak_core_ring_events:add_guarded_handler(kakapo_core_ring_event_handler, []),
