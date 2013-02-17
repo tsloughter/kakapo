@@ -10,6 +10,8 @@
                 ,poolboy
                 ,bitcask
                 ,riak_kv
+                ,riak_pb
+                ,protobuffs
                 ]},
   {mod, { kakapo_core_app, []}},
   {env, []}
