@@ -28,7 +28,7 @@ init(_Args) ->
 
     Dispatch = cowboy_router:compile([
                                      %% {HostMatch, list({PathMatch, Handler, Opts})}
-                                     {'_', [{"/", kakapo_route_handler, []}]}
+                                     {'_', [{'_', kakapo_route_handler, []}]}
                                      ]),
 
     ListenPort = list_to_integer(os:getenv("PORT")),
