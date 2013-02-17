@@ -5,10 +5,14 @@
         ,forward/3
         ,forward/4]).
 
+-include_lib("kakapo_core/include/kakapo_core.hrl").
+
 -define(CONNECT_TIMEOUT, 5000).
 
 lookup_service(Domain) ->
-    kakapo_core:lookup_service(Domain).
+    {ok, Domain, DomainGroup} = kakapo_domains:lookup_domain_group(Domain),
+    {ok, Service} = kakapo_service:lookup_service(DomainGroup#kakapo_domain_group.route_id),
+    {Service#kakapo_route.ip, Service#kakapo_route.port}.     
 
 connect_to_server(Service, Port) ->
     Opts = [binary, {packet, http_bin}, {packet_size, 1024 * 1024}, {recbuf, 1024 * 1024}, {active, once}, {reuseaddr, true}],
