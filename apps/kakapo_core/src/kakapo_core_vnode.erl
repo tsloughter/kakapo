@@ -29,8 +29,7 @@ init([Partition]) ->
 % Sample command: respond to a ping
 handle_command(ping, _Sender, State) ->
     {reply, {pong, State#state.partition}, State};
-handle_command(Message, _Sender, State) ->
-    ?PRINT({unhandled_command, Message}),
+handle_command(Message, _Sender, State) ->  
     {noreply, State}.
 
 handle_handoff_command(_Message, _Sender, State) ->

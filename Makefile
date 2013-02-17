@@ -13,10 +13,7 @@ PROJ_PLT=$(CURDIR)/.depsolver_plt
 compile:
 	@./rebar get-deps compile
 
-compile-no-deps:
-	@./rebar compile skip-deps=true
-
-rel: compile-no-deps
+rel: compile
 	@./relcool
 
 $(PROJ_PLT):
