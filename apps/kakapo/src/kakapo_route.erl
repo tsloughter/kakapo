@@ -47,7 +47,7 @@ relay(ClientSocket, BackendSocket, Req) ->
             gen_tcp:close(ClientSocket),
             exit(normal);
         {tcp_closed, ClosedSock} ->
-            WhichSocket =
+            _WhichSocket =
                 case ClosedSock of
                     ClientSocket -> client;
                     BackendSocket -> backend
@@ -61,7 +61,7 @@ relay(ClientSocket, BackendSocket, Req) ->
                 {error, _Reason} ->
                     error
             end;
-        {http, BackendSocket, {http_header, _, 'Connection', _, Val}} ->
+        {http, BackendSocket, {http_header, _, 'Connection', _, _Val}} ->
             relay(ClientSocket, BackendSocket, Req);
         {http, BackendSocket, {http_header, _, HttpField, _, Value}} ->
             case gen_tcp:send(ClientSocket, [make_header({HttpField, Value})]) of
