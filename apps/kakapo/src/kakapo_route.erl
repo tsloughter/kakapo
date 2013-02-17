@@ -2,7 +2,8 @@
 
 -export([lookup_service/1
         ,connect_to_server/2
-        ,forward/3]).
+        ,forward/3
+        ,forward/4]).
 
 -define(CONNECT_TIMEOUT, 5000).
 
@@ -14,12 +15,18 @@ connect_to_server(Service, Port) ->
     gen_tcp:connect(binary_to_list(Service), Port, Opts, ?CONNECT_TIMEOUT).
 
 forward(BackendSocket, AdditionalHeaders, Req) ->
+    forward(BackendSocket, AdditionalHeaders, Req, false).
+
+forward(BackendSocket, AdditionalHeaders, Req, StripKakapoHdr) ->
     Request = make_request({cowboy_req:get(method, Req), cowboy_req:get(path, Req), cowboy_req:get(version, Req)}),
     Headers = cowboy_req:get(headers, Req),    
     gen_tcp:send(BackendSocket, Request),    
     Headers1 = lists:foldl(
                  fun(H, Acc) ->
-                         make_header(H) ++ Acc
+                        case H of
+                             {<<"x-kakapo-route">>, _} when StripKakapoHdr == true -> Acc;
+                             _ -> make_header(H) ++ Acc
+                        end
                  end, [<<"\r\n">>], Headers++AdditionalHeaders),
     gen_tcp:send(BackendSocket, Headers1),
     relay(cowboy_req:get(socket, Req), BackendSocket, Req),
