@@ -54,6 +54,6 @@ load_test_data() ->
                           AppObject = riak_object:new(<<"app">>, DomainGroupName, App),
 
                           C:put(AppObject)
-                  end, [{<<"zinn">>, <<"zinn_group">>, <<"zinn_route">>, <<"localhost">>, 7999}
+                  end, [{<<"httpbin.org">>, <<"httpbin_group">>, <<"httpbin_route">>, <<"httpbin.org">>, 80}
                        ,{<<"localhost">>, <<"local_group">>, <<"local_route">>, <<"google.com">>, 80}]).
 
