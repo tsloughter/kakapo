@@ -25,6 +25,9 @@ start(_StartType, _StartArgs) ->
             ok = riak_core_node_watcher:service_up(kakapo_core, self()),
             ok = riak_core_node_watcher:service_up(riak_kv, self()),
 
+            riak_core_bucket:set_bucket(<<"app">>, [{precommit, [{struct, [{<<"mod">>, <<"kakapo_core_utils">>},
+                                                                           {<<"fun">>,<<"ets_update">>}]}]}]),
+            
             %% Test Data
             load_test_data(),
             
