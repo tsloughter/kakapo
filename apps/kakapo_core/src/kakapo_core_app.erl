@@ -49,16 +49,11 @@ load_test_data() ->
                                                   ip = IP,
                                                   port = Port},
 
-                          DomainObject = riak_object:new(<<"domains">>, DomainName, Domain),
-                          DomainGroupObject = riak_object:new(<<"domain_groups">>, DomainGroupName, DomainGroup),
-                          ServiceObject = riak_object:new(<<"services">>, RouteId, Service),
+                          App = {Domain, DomainGroup, Service},
+                          
+                          AppObject = riak_object:new(<<"app">>, DomainGroupName, App),
 
-                          C:put(DomainObject),
-                          true = ets:insert(kakapo_domain, Domain),
-                          C:put(DomainGroupObject),
-                          true = ets:insert(kakapo_domain_group, DomainGroup),
-                          C:put(ServiceObject),
-                          true = ets:insert(kakapo_route, Service)
+                          C:put(AppObject)
                   end, [{<<"zinn">>, <<"zinn_group">>, <<"zinn_route">>, <<"localhost">>, 7999}
                        ,{<<"localhost">>, <<"local_group">>, <<"local_route">>, <<"google.com">>, 80}]).
 

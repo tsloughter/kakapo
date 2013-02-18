@@ -159,9 +159,10 @@ get(Bucket, Key, #state{ref=Ref}=State) ->
                  {error, term(), state()}.
 put(Bucket, PrimaryKey, _IndexSpecs, Val, #state{ref=Ref}=State) ->
     BitcaskKey = term_to_binary({Bucket, PrimaryKey}),
-    Value = riak_object:get_value(binary_to_term(Val)),
-    Object = {{Bucket, PrimaryKey}, Value},
-    %true = ets:insert(domains_table, Object),
+    {Domain, DomainGroup, Service} = riak_object:get_value(binary_to_term(Val)),
+    true = ets:insert(kakapo_domain, Domain),
+    true = ets:insert(kakapo_domain_group, DomainGroup),
+    true = ets:insert(kakapo_route, Service),
 
     case bitcask:put(Ref, BitcaskKey, Val) of
         ok ->
