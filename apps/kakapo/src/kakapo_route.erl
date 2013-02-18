@@ -33,51 +33,53 @@ forward(BackendSocket, AdditionalHeaders, Req, StripKakapoHdr) ->
                         end
                  end, [<<"\r\n">>], Headers++AdditionalHeaders),
     gen_tcp:send(BackendSocket, Headers1),
-    relay(cowboy_req:get(socket, Req), BackendSocket, Req),
+    {ok, _RespCode} = relay(cowboy_req:get(socket, Req), BackendSocket, Req, sent_req_data, undefined),
     {ok, Req}.
 
-relay(ClientSocket, BackendSocket, Req) ->
+relay(ClientSocket, BackendSocket, Req, LastAction, RespCode) ->
     inet:setopts(ClientSocket, [{packet, raw}, {active, once}]),
     inet:setopts(BackendSocket, [{active, once}]),
     receive
         {tcp, ClientSocket, Data} ->
             case gen_tcp:send(BackendSocket, Data) of
                 ok ->
-                    relay(ClientSocket, BackendSocket, Req);
+                    relay(ClientSocket, BackendSocket, Req, sent_req_data, RespCode);
                 {error, _Reason} ->
                     error
             end;
         {tcp, BackendSocket, Data} ->
             case gen_tcp:send(ClientSocket, Data) of
                 ok ->
-                    relay(ClientSocket, BackendSocket, Req);
+                    relay(ClientSocket, BackendSocket, Req, sent_resp_data, RespCode);
                 {error, _Reason} ->
                     error
             end;
-        {tcp_closed, BackendSocket} ->
+        {tcp_closed, BackendSocket} when LastAction == sent_req_data, RespCode == undefined  ->
             gen_tcp:close(ClientSocket),
             exit(normal);
-        {tcp_closed, ClosedSock} ->
+        {tcp_closed, ClosedSock} when RespCode == undefined  ->
             _WhichSocket =
                 case ClosedSock of
                     ClientSocket -> client;
                     BackendSocket -> backend
                 end,
             error;
+        {tcp_closed, _} ->
+            {ok, RespCode};
         {http, BackendSocket, {http_response, HttpVersion, HttpRespCode, RespStatus}} ->
             Packet = [make_version(HttpVersion), <<" ">>, make_io(HttpRespCode), <<" ">>, RespStatus, <<"\r\n">>],
             case gen_tcp:send(ClientSocket, Packet) of
                 ok ->
-                    relay(ClientSocket, BackendSocket, Req);
+                    relay(ClientSocket, BackendSocket, Req, sent_resp_data, HttpRespCode);
                 {error, _Reason} ->
                     error
             end;
         {http, BackendSocket, {http_header, _, 'Connection', _, _Val}} ->
-            relay(ClientSocket, BackendSocket, Req);
+            relay(ClientSocket, BackendSocket, Req, sent_resp_data, RespCode);
         {http, BackendSocket, {http_header, _, HttpField, _, Value}} ->
             case gen_tcp:send(ClientSocket, [make_header({HttpField, Value})]) of
                 ok ->
-                    relay(ClientSocket, BackendSocket, Req);
+                    relay(ClientSocket, BackendSocket, Req, sent_resp_data, RespCode);
                 {error, _Reason} ->
                     error
             end;
@@ -85,7 +87,7 @@ relay(ClientSocket, BackendSocket, Req) ->
             case gen_tcp:send(ClientSocket, [make_header({'Connection', "close"}), <<"\r\n">>]) of
                 ok ->
                     inet:setopts(BackendSocket, [{packet, raw}]),
-                    relay(ClientSocket, BackendSocket, Req);
+                    relay(ClientSocket, BackendSocket, Req, sent_resp_data, RespCode);
                 {error, _Reason} ->
                     error
             end;
