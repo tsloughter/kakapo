@@ -5,14 +5,14 @@
         ,forward/3
         ,forward/4]).
 
--include_lib("kakapo_core/include/kakapo_core.hrl").
+-include("kakapo_core.hrl").
 
 -define(CONNECT_TIMEOUT, 5000).
 
 lookup_service(Domain) ->
     {ok, Domain, DomainGroup} = kakapo_domains:lookup_domain_group(Domain),
     {ok, Service} = kakapo_service:lookup_service(DomainGroup#kakapo_domain_group.route_id),
-    {Service#kakapo_route.ip, Service#kakapo_route.port}.     
+    {Service#kakapo_route.ip, Service#kakapo_route.port}.
 
 connect_to_server(Service, Port) ->
     Opts = [binary, {packet, http_bin}, {packet_size, 1024 * 1024}, {recbuf, 1024 * 1024}, {active, once}, {reuseaddr, true}],
@@ -23,8 +23,8 @@ forward(BackendSocket, AdditionalHeaders, Req) ->
 
 forward(BackendSocket, AdditionalHeaders, Req, StripKakapoHdr) ->
     Request = make_request({cowboy_req:get(method, Req), cowboy_req:get(path, Req), cowboy_req:get(version, Req)}),
-    Headers = cowboy_req:get(headers, Req),    
-    gen_tcp:send(BackendSocket, Request),    
+    Headers = cowboy_req:get(headers, Req),
+    gen_tcp:send(BackendSocket, Request),
     Headers1 = lists:foldl(
                  fun(H, Acc) ->
                         case H of

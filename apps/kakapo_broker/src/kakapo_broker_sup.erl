@@ -1,4 +1,4 @@
--module(kakapo_core_sup).
+-module(kakapo_broker_sup).
 
 -behaviour(supervisor).
 
@@ -20,10 +20,12 @@ start_link() ->
 %% ===================================================================
 
 init(_Args) ->
-    VMaster = { kakapo_core_vnode_master,
-                  {riak_core_vnode_master, start_link, [kakapo_core_vnode]},
-                  permanent, 5000, worker, [riak_core_vnode_master]},
+    RestartStrategy = one_for_one,
+    MaxRestarts = 1000,
+    MaxSecondsBetweenRestarts = 3600,
 
-    { ok,
-        { {one_for_one, 5, 10},
-          [VMaster]}}.
+    SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
+
+    ChildSpecs = [],
+
+    {ok, {SupFlags, ChildSpecs}}.

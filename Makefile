@@ -10,11 +10,14 @@ PROJ_PLT=$(CURDIR)/.depsolver_plt
 
 .PHONY: dialyzer typer clean distclean
 
-compile:
+deps:
 	@./rebar get-deps compile
 
+compile: deps
+	@./rebar skip_deps=true compile
+
 rel: compile
-	@./relcool
+	@./relx
 
 $(PROJ_PLT):
 	dialyzer --output_plt $(PROJ_PLT) --build_plt \

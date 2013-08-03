@@ -2,7 +2,7 @@
 
 -export([lookup_domain_group/1]).
 
--include_lib("kakapo_core/include/kakapo_core.hrl").
+-include("kakapo_core.hrl").
 
 lookup_domain_group(Domain) ->
     case ets:lookup(kakapo_domain, Domain) of
@@ -16,4 +16,3 @@ lookup_domain_group(Domain) ->
         _ ->
             {error, domain_not_found}
     end.
-

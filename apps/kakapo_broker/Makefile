@@ -1,6 +1,6 @@
 # See LICENSE for licensing information.
 
-PROJECT = kakapo_core
+PROJECT = kakapo
 ERLC_OPTS = -Werror +debug_info +warn_export_all # +bin_opt_info +warn_missing_spec
 
 DEPS_DIR ?= $(CURDIR)/deps
@@ -37,24 +37,38 @@ app: ebin/$(PROJECT).app
 
 ebin/$(PROJECT).app: src/*.erl
 	@mkdir -p ebin/
-	$(erlc_verbose) erlc -v $(ERLC_OPTS) -o ebin/ -pa ebin/ \
-		src/$(PROJECT)_middleware.erl $?
+	$(erlc_verbose) erlc -v $(ERLC_OPTS) -o ebin/ -pa ebin/
 
 clean:
 	$(gen_verbose) rm -rf ebin/ test/*.beam erl_crash.dump
 
 # Dependencies.
 
-$(DEPS_DIR)/riak_core:
+$(DEPS_DIR)/ranch:
 	@mkdir -p $(DEPS_DIR)
-	git clone -n -- https://github.com/basho/riak_core.git $(DEPS_DIR)/riak_core
-	cd $(DEPS_DIR)/riak_core ; git checkout -q $(RANCH_VSN)
+	git clone -n -- https://github.com/extend/ranch.git $(DEPS_DIR)/ranch
+	cd $(DEPS_DIR)/ranch ; git checkout -q $(RANCH_VSN)
 
-deps: $(DEPS_DIR)/riak_core
-	@$(MAKE) -C $(DEPS_DIR)/riak_core
+$(DEPS_DIR)/cowboy:
+	@mkdir -p $(DEPS_DIR)
+	git clone -n -- https://github.com/extend/cowboy.git $(DEPS_DIR)/cowboy
+	cd $(DEPS_DIR)/cowboy ; git checkout -q $(RANCH_VSN)
+
+$(DEPS_DIR)/lager:
+	@mkdir -p $(DEPS_DIR)
+	git clone -n -- https://github.com/basho/lager.git $(DEPS_DIR)/lager
+	cd $(DEPS_DIR)/lager ; git checkout -q $(RANCH_VSN)
+
+$(DEPS_DIR)/jsx:
+	@mkdir -p $(DEPS_DIR)
+	git clone -n -- https://github.com/talentdeficit/jsx.git $(DEPS_DIR)/jsx
+	cd $(DEPS_DIR)/jsx ; git checkout -q $(RANCH_VSN)
+
+deps: $(DEPS_DIR)/ranch $(DEPS_DIR)/cowboy $(DEPS_DIR)/jsx
+	@$(MAKE) -C $(DEPS_DIR)/*
 
 clean-deps:
-	-@$(MAKE) -C $(DEPS_DIR)/riak_core clean
+	-@$(MAKE) -C $(DEPS_DIR)/* clean
 
 # Documentation.
 

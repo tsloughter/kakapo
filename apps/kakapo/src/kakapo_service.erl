@@ -2,7 +2,7 @@
 
 -export([lookup_service/1]).
 
--include_lib("kakapo_core/include/kakapo_core.hrl").
+-include("kakapo_core.hrl").
 
 lookup_service(RouteId) ->
     case ets:lookup(kakapo_route, RouteId) of
@@ -11,4 +11,3 @@ lookup_service(RouteId) ->
         [] ->
             {error, route_not_found}
     end.
-

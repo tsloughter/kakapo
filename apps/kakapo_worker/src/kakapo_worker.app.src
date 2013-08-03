@@ -1,4 +1,4 @@
-{application, kakapo,
+{application, kakapo_worker,
  [
   {description, ""},
   {vsn, "1"},
@@ -12,6 +12,6 @@
                  ,cowboy
                  ,erlzmq
                  ]},
-  {mod, { kakapo_app, []}},
+  {mod, { kakapo_worker_app, []}},
   {env, []}
  ]}.
